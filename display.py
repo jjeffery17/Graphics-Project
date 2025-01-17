@@ -2,16 +2,11 @@ import cv2
 import screen_coords as sc
 import random
 
-screen = sc.World(1000, 500)
+screen = sc.World(600, 600)
 
 screen.world_vertices.append([100, 100, 500])
-screen.world_vertices.append([-100, 100, 500])
+screen.world_vertices.append([-100, 100, 200])
 screen.world_vertices.append([0, -100, 500])
-screen.world_faces.append([0, 1, 2])
-
-screen.world_vertices.append([200, 200, 500])
-screen.world_vertices.append([-200, 200, 500])
-screen.world_vertices.append([0, -200, 500])
 screen.world_faces.append([0, 1, 2])
 
 while True:

@@ -60,6 +60,19 @@ def vector_dot(a: list[float], b: list[float]) -> float:
         o += a[i]*b[i]
     return o
 
+def vector_lerpin(start: list[float], end: list[float], alpha: float) -> list[float]:
+    diff = vector_subtraction(end, start)
+    mul = vector_multiplication(diff, alpha)
+    return vector_addition(start, mul)
+
+def vector_lerpout(start: list[float], end: list[float], point: list[float]) -> float:
+    t = vector_size(vector_subtraction(end, start))
+    p = vector_size(vector_subtraction(point, start))
+    return p / t
+
+def lerp(start: float, end: float, alpha: float) -> float:
+    return start+(end-start)*alpha
+
 class World:
     def __init__(self, screenx, screeny, fov=90.0):
         self.screenx = screenx
@@ -142,6 +155,10 @@ class World:
         max_y = math.ceil(max(a[1], b[1], c[1]))
         min_y = math.floor(min(a[1], b[1], c[1]))
 
+        ao = a[2]
+        bo = b[2]
+        co = c[2]
+
         a[2] = 1.0
         b[2] = 1.0
         c[2] = 1.0
@@ -154,9 +171,21 @@ class World:
         for x in range(min_x, max_x + 1):
             for y in range(min_y, max_y + 1):
                 p = [x, y, 1.0]
-                area_pab = 0.5*vector_size(vector_cross(vector_subtraction(a, p), vector_subtraction(b, p)))
+                area_pab = 0.5 * vector_size(vector_cross(vector_subtraction(a, p), vector_subtraction(b, p)))
                 area_pbc = 0.5 * vector_size(vector_cross(vector_subtraction(b, p), vector_subtraction(c, p)))
                 area_pca = 0.5 * vector_size(vector_cross(vector_subtraction(c, p), vector_subtraction(a, p)))
+
+                pa = vector_size(vector_subtraction(a, p))
+                pb = vector_size(vector_subtraction(b, p))
+                pc = vector_size(vector_subtraction(c, p))
+                ps = pa + pb + pc
+
+                pa_n = 1 - (pa/ps)
+                pb_n = 1 - (pb/ps)
+                pc_n = 1 - (pc/ps)
+
+                p[2] = ((pa_n * ao) + (pb_n * bo) + (pc_n * co)) / (pa_n + pb_n + pc_n)
+
                 if area_abc-tolerance <= area_pab+area_pbc+area_pca <= area_abc+tolerance:
                     points.append(p)
         return points
